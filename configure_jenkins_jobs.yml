@@ -1,0 +1,19 @@
+---
+- name: Configure Jenkins Jobs
+  hosts: jenkins_hosts
+  become: true
+  tasks:
+    - name: Copy Jenkins Job Config XML
+      copy:
+        src: /home/ubuntu/job_config.xml
+        dest: /var/lib/jenkins/jobs/IrenasProject_CI3001/config.xml
+
+    - name: Trigger Jenkins Job Config Change
+      command: "touch /var/lib/jenkins/jobs/IrenasProject_CI3001/config.xml"
+      notify: Restart Jenkins Service
+
+  handlers:
+    - name: Restart Jenkins Service
+      systemd:
+        name: jenkins
+        state: restarted
